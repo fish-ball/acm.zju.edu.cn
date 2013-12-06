@@ -1,0 +1,65 @@
+
+<DIV class=tit>zoj1177 Magic-Number解题报告</DIV>
+<DIV class=date>2006-10-13 23:01</DIV>
+<TABLE style="TABLE-LAYOUT: fixed; WIDTH: 100%">
+<TBODY>
+<TR>
+<TD>
+<DIV class=cnt id=blog_text>
+<P>我也没怎么写过解题报告，也没有哪个告诉我应该按照什么格式来写，权且记一记想法，算作开篇。</P>
+<P>给定一个数1&lt;K&lt;=10^4</P>
+<P>题目要求一个最小的满足这样的条件的数N:&nbsp; N=M*4, 其中M是将N的第一位挪到最后一位，其余各位依次左移的结果。</P>
+<P>如 K=4, 则满足上述条件的数有 102564, 205128, 307692,... 其中最小的是102564</P>
+<P>如果直接考虑去构造N，可能会摸不着头脑，但是注意到等式 N=M*4, 如果能够造出M, 那么N不就出来了吗？ 
+可是M怎么构造呢？关键一步在利用到条件：M与N的关系——M是将N的第一位挪到最后一位，其余各位依次左移的结果。</P>
+<P>如果M的最低位是确定的，那么N的最低位就确定了不是？(N=M*4), N的最低位确定了，M的十位就确定了吧？——想想看，很简单的。:) in fact, 
+除了最低位（假设为第0位，后面依次是1,2,..位，权值递增），M的第i(i&gt;0)位其实就是N的第i-1位。这样M的第i位确定了，那么就可以前面的进位和当前的第i位*K就可以得到N的第i位，也就是M的第i+1位。后面依次确定。</P>
+<P>所以只要枚举M的第0位就可以把N确定出来了。</P>
+<P>构造的过程中，如果M的第i位和前面进过来的进位在以前出现过，那么就可以剪掉，说明这次枚举的第0位是构造不出来符合条件的M, N的。由于 
+K&lt;=10^4, 每一位是一个0-9的数，所以只需要10^5的空间（访问标志）和每次最坏情况的10^5的单位运算。一共枚举9次，最坏情况的总的时间复杂度是 
+o(10*10*K)</P>
+<P>代码如下：</P>
+<P>
+<TABLE width="100%" border=1>
+<TBODY>
+<TR>
+<TD align=middle>5</TD>
+<TD align=middle>2006-10-13 21:58:57</TD>
+<TD align=middle>00:00.01</TD>
+<TD align=middle>880K</TD>
+<TD align=middle>C++</TD>
+<TD align=middle><A style="TEXT-DECORATION: none" 
+href="http://acm.zju.edu.cn/user_status.php?user=ZengXiaoQi"><FONT 
+color=#800080>ZengXiaoQi</FONT></A></TD></TR></TBODY></TABLE></P>
+<TABLE cellSpacing=1 cellPadding=3 width="90%" align=center border=0>
+<TBODY>
+<TR>
+<TD><SPAN class=genmed><STRONG><FONT 
+size=2>Code:</FONT></STRONG></SPAN></TD></TR>
+<TR>
+<TD class=code>#include&lt;stdio.h&gt; <BR>#include&lt;string.h&gt; 
+<BR><BR>#define maxv (10000+5) <BR><BR>bool used[10][maxv]; <BR><BR>char 
+s[maxv*20], best[maxv*20]; <BR>int K; <BR><BR>bool magic(int nu) <BR>{ 
+<BR>&nbsp; &nbsp;int i, ca, pre=nu; <BR>&nbsp; &nbsp;i = ca = 0; <BR>&nbsp; 
+&nbsp;memset(used, 0, sizeof(used)); <BR>&nbsp; &nbsp;while( !used[nu][ca] ) 
+<BR>&nbsp; &nbsp;{ <BR>&nbsp; &nbsp;&nbsp; &nbsp;used[nu][ca] = 1; <BR>&nbsp; 
+&nbsp;&nbsp; &nbsp;s[i] = (nu*K+ca)%10+'0', ca = (nu*K+ca)/10; <BR>&nbsp; 
+&nbsp;&nbsp; &nbsp;nu = s[i++]-'0'; <BR>&nbsp; &nbsp;} <BR>&nbsp; &nbsp;s[i] = 
+0; <BR>&nbsp; &nbsp;if( nu==pre &amp;&amp; ca==0 ) return 1; <BR>&nbsp; 
+&nbsp;return 0; <BR>} <BR><BR>bool com(char *a, char *b) <BR>{ <BR>&nbsp; 
+&nbsp;int i, la=strlen(a), lb=strlen(b); <BR>&nbsp; &nbsp;if( la&lt;lb ) return 
+1; <BR>&nbsp; &nbsp;else if( la&gt;lb ) return 0; <BR>&nbsp; &nbsp;for(i=la-1; 
+i&gt;=0; i--) <BR>&nbsp; &nbsp;&nbsp; &nbsp;if( a[i]&lt;b[i] ) return 1; 
+<BR>&nbsp; &nbsp;&nbsp; &nbsp;else if( a[i]&gt;b[i] ) return 0; <BR>&nbsp; 
+&nbsp;return 0; <BR>} <BR><BR>int main() <BR>{ <BR>&nbsp; &nbsp;int i, cas; 
+<BR>&nbsp; &nbsp;scanf("%d", &amp;cas); <BR>&nbsp; &nbsp;while( cas-- ) 
+<BR>&nbsp; &nbsp;{ <BR>&nbsp; &nbsp;&nbsp; &nbsp;scanf("%d", &amp;K); <BR>&nbsp; 
+&nbsp;&nbsp; &nbsp;best[0] = 0; <BR>&nbsp; &nbsp;&nbsp; &nbsp;for(i=1; i&lt;10; 
+i++) <BR>&nbsp; &nbsp;&nbsp; &nbsp;{ <BR>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; 
+&nbsp;if( magic(i) &amp;&amp; ( !best[0]||com(s, best) ) ) <BR>&nbsp; 
+&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;strcpy(best, s); <BR>&nbsp; 
+&nbsp;&nbsp; &nbsp;} <BR><BR>&nbsp; &nbsp;&nbsp; &nbsp;for(i=strlen(best)-1; 
+i&gt;=0; i--) putchar(best[i]); <BR>&nbsp; &nbsp;&nbsp; &nbsp;puts(""); 
+<BR>&nbsp; &nbsp;&nbsp; &nbsp;if( cas ) puts(""); <BR>&nbsp; &nbsp;} <BR>&nbsp; 
+&nbsp;return 0; <BR>} 
+<BR></TD></TR></TBODY></TABLE></DIV></TD></TR></TBODY></TABLE>
