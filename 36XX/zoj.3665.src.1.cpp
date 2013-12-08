@@ -1,4 +1,4 @@
-// 3487574 2013-12-07 14:33:23 Accepted 3665 C++ 1030 272 呆滞的慢板
+// 3487620 2013-12-08 15:14:16 Accepted 3665 C++ 210 272 呆滞的慢板
 // 1. 效率卡得很死，瓶颈在于 find_q 函数中二分上限 r 的取值。
 // 2. 在 c++ 下存在溢出的问题，因此对于计算 pow 溢出的情况需要特别小心处理。 
 
@@ -17,15 +17,11 @@ i64 i64_pow(i64 a, i64 n) {
     return (n&1) ? ans * a : ans;
 }
 
-i64 my_pow(i64 a, i64 n) {
-    return pow(double(a), double(n)) > 1e14 ? 0 : i64_pow(a, n);
-}
-
 i64 find_q(i64 s, i64 n) {
     i64 l = 1, r = i64(pow(s, 1.0/n)) + 1;
     while(l < r - 1) {
         i64 q = (l + r) / 2;
-        i64 pwqn = my_pow(q, n);
+        i64 pwqn = pow(double(q), double(n)) > 1e14 ? 0 : i64_pow(q, n);
         i64 ss = (pwqn-1)/(q-1)*q;
         if(pwqn && (ss == s || ss == s-1)) return q;
         else if(pwqn == 0 || ss > s) r = q;

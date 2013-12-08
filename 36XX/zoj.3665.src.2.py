@@ -1,6 +1,8 @@
 # -*- coding: utf8 -*-
 import sys
 
+# 3487680 2013-12-08 20:56:03 Accepted 3665 Python 960 140 呆滞的慢板
+
 # 寻找前 n 项和为 s 或 s-1 的等比数列的公比，失败返回 0。
 def find_q(s, n):
     # r 的初值是效率的瓶颈！
