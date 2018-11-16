@@ -216,3 +216,7 @@ pip-log.txt
 
 
 *.exe
+*.out
+sample.in
+
+/.idea
